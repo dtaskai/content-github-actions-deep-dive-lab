@@ -39,6 +39,7 @@ const IndexPage = () => {
               </span>
             </a>
           </footer>
+          Launched 2022-10-08
       </main>
 
       
