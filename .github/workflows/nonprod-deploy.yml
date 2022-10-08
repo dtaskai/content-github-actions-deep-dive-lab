@@ -27,15 +27,5 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.sha }}
-      - name: Unzip artifact
-        run: |
-            sudo apt install unzip
-            unzip ${{ github.sha }}.zip
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
-      - name: Upload to S3 non-production bucket
-        run: aws s3 cp ${{ github.sha }} arn:aws:s3:::cfst-3457-02ef0bc43e605ef2ace4fe247-nonprodbucket-91tjl42o4lhl/{{ github.sha }} --recursive
+      - name: Ls
+        run: ls -la
