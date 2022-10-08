@@ -23,9 +23,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v3
         with:
           name: ${{ github.sha }}
+      - name: Unzip artifact
+        run: |
+            apt install unzip
+            unzip ${{ github.sha }}.zip
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -33,4 +38,4 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
       - name: Upload to S3 non-production bucket
-        run: aws s3 cp public/ arn:aws:s3:::cfst-3457-02ef0bc43e605ef2ace4fe247-nonprodbucket-91tjl42o4lhl --recursive
+        run: aws s3 cp ${{ github.sha }} arn:aws:s3:::cfst-3457-02ef0bc43e605ef2ace4fe247-nonprodbucket-91tjl42o4lhl --recursive
