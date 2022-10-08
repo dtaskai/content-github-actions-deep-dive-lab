@@ -1,0 +1,40 @@
+name: Deploy static website to prod environment
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.5.0
+      - name: Install Gatsby and build site
+        run: |
+          npm install -g gatsby-cli
+          npm install
+          gatsby build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.sha }}
+          path: public/
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.sha }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+      - name: Upload to S3 non-production bucket
+        run: aws s3 cp . s3://cfst-3457-02ef0bc43e605ef2ace4fe247942-prodbucket-1hou5xod2romr --recursive
